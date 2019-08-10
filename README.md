@@ -63,3 +63,23 @@ chmod a+x bin/solskogen
 ```
 
 6172 bytes
+
+## Shader minifier tool
+
+Use [Shader Minifer](https://github.com/laurentlb/Shader_Minifier) on the fragment shader code. It's a tool written in F# that does what it sounds like.
+
+Some limitations: no dead code elimination, limited support for structs.
+
+```bash
+SHADER_MINIFIER=Shader_Minifier/shader_minifier.exe
+if [ ! -e $SHADER_MINIFIER ]; then
+    pushd Shader_Minifier
+    TERM=xterm ./compile.bash
+    popd
+fi
+set -x
+mono $SHADER_MINIFIER --preserve-externals fshader.glsl -o gen/shaders.h
+```
+
+Uncompressed: 21992 bytes.
+Final: 4982 bytes.
