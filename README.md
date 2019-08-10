@@ -247,3 +247,49 @@ Resulting `ld` command:
 
 Uncompressed: 9016 bytes.
 Final: 3311 bytes.
+
+## Linking without libc
+
+If we try to link without `-lc`, we get an unresolved `__libc_start_main` from `crt1.o`. Some tutorials suggest using a `_start` function at the entry point instead of `main`, and not linking `crt1.o` at all, but that doesn't seem to work when loading shared libraries (it segfaults).
+
+As a simpler solution, let's try implementing our own minimal versions `__libc_start_main` and other functions referenced by `crt1.o`.
+
+```c
+// minlibc.c
+extern int main();
+
+// Minimal implementations of crt1.o libc functions.
+// With these defined, we don't need to link libc. Probably.
+void __libc_csu_init() {}
+void __libc_csu_fini() {}
+void __libc_start_main() { main(); }
+```
+
+Compile and link this instead of `-lc` and `ctrn.o`.
+
+```bash
+cc $CFLAGS -DNDEBUG -c solskogen.c -o obj/solskogen-release.o
+cc $CFLAGS -c minlibc.c -o obj/minlibc.o
+/usr/bin/ld \
+    -z norelro \
+    -z noseparate-code \
+    --orphan-handling=discard \
+    --as-needed \
+    --gc-sections \
+    --hash-style=gnu \
+    --no-eh-frame-hdr \
+    --no-ld-generated-unwind-info \
+    -m elf_x86_64 \
+    -dynamic-linker \
+    /lib64/ld-linux-x86-64.so.2 \
+    -o bin/solskogen-release \
+    /usr/lib/x86_64-linux-gnu/crt1.o \
+    obj/solskogen-release.o \
+    obj/minlibc.o \
+    -lGL \
+    -lgtk-3 \
+    -lgobject-2.0
+```
+
+Uncompressed: 8752 bytes.
+Final: 3110 bytes.
