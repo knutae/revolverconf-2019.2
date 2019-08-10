@@ -111,3 +111,139 @@ Uncompressed: 16656 bytes.
 Final: 3741 bytes.
 
 Hey, we're under 4k already!
+
+## Linking tuning
+
+Add `-v` to link command to see the underlying `ld` command. Tune this to reduce the size futher.
+
+```bash
+/usr/bin/ld \
+    -z relro \
+    --hash-style=gnu \
+    --eh-frame-hdr \
+    -m elf_x86_64 \
+    -dynamic-linker \
+    /lib64/ld-linux-x86-64.so.2 \
+    -o bin/solskogen-release \
+    /usr/lib/x86_64-linux-gnu/crt1.o \
+    /usr/lib/x86_64-linux-gnu/crti.o \
+    /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o \
+    -L/usr/lib/gcc/x86_64-linux-gnu/8 \
+    -L/usr/x86_64-linux-gnu/lib64 \
+    -L/usr/lib/x86_64-linux-gnu \
+    -L/lib/x86_64-linux-gnu \
+    -L/lib64 \
+    -L/usr/lib/x86_64-linux-gnu \
+    -L/usr/x86_64-linux-gnu/lib \
+    -L/usr/lib \
+    -L/usr/lib/llvm-7/lib \
+    -L/lib \
+    -L/usr/lib obj/solskogen-release.o \
+    -lGL \
+    -lgtk-3 \
+    -lgdk-3 \
+    -lpangocairo-1.0 \
+    -lpango-1.0 \
+    -latk-1.0 \
+    -lcairo-gobject \
+    -lcairo \
+    -lgdk_pixbuf-2.0 \
+    -lgio-2.0 \
+    -lgobject-2.0 \
+    -lglib-2.0 \
+    -lgcc \
+    --as-needed \
+    -lgcc_s \
+    --no-as-needed \
+    -lc \
+    -lgcc \
+    --as-needed \
+    -lgcc_s \
+    --no-as-needed \
+    /usr/lib/gcc/x86_64-linux-gnu/8/crtend.o \
+    /usr/lib/x86_64-linux-gnu/crtn.o
+```
+
+```diff
+ /usr/bin/ld \
+-    -z relro \
++    -z norelro \
++    -z noseparate-code \
++    --orphan-handling=discard \
++    --as-needed \
++    --gc-sections \
+     --hash-style=gnu \
+-    --eh-frame-hdr \
++    --no-eh-frame-hdr \
++    --no-ld-generated-unwind-info \
+     -m elf_x86_64 \
+     -dynamic-linker \
+     /lib64/ld-linux-x86-64.so.2 \
+     -o bin/solskogen-release \
+     /usr/lib/x86_64-linux-gnu/crt1.o \
+-    /usr/lib/x86_64-linux-gnu/crti.o \
+-    /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o \
+-    -L/usr/lib/gcc/x86_64-linux-gnu/8 \
+-    -L/usr/x86_64-linux-gnu/lib64 \
+-    -L/usr/lib/x86_64-linux-gnu \
+-    -L/lib/x86_64-linux-gnu \
+-    -L/lib64 \
+-    -L/usr/lib/x86_64-linux-gnu \
+-    -L/usr/x86_64-linux-gnu/lib \
+-    -L/usr/lib \
+-    -L/usr/lib/llvm-7/lib \
+-    -L/lib \
+-    -L/usr/lib obj/solskogen-release.o \
++    obj/solskogen-release.o \
+     -lGL \
+     -lgtk-3 \
+-    -lgdk-3 \
+-    -lpangocairo-1.0 \
+-    -lpango-1.0 \
+-    -latk-1.0 \
+-    -lcairo-gobject \
+-    -lcairo \
+-    -lgdk_pixbuf-2.0 \
+-    -lgio-2.0 \
+     -lgobject-2.0 \
+-    -lglib-2.0 \
+-    -lgcc \
+-    --as-needed \
+-    -lgcc_s \
+-    --no-as-needed \
+     -lc \
+-    -lgcc \
+-    --as-needed \
+-    -lgcc_s \
+-    --no-as-needed \
+-    /usr/lib/gcc/x86_64-linux-gnu/8/crtend.o \
+     /usr/lib/x86_64-linux-gnu/crtn.o
+```
+
+Resulting `ld` command:
+
+```bash
+/usr/bin/ld \
+    -z norelro \
+    -z noseparate-code \
+    --orphan-handling=discard \
+    --as-needed \
+    --gc-sections \
+    --hash-style=gnu \
+    --no-eh-frame-hdr \
+    --no-ld-generated-unwind-info \
+    -m elf_x86_64 \
+    -dynamic-linker \
+    /lib64/ld-linux-x86-64.so.2 \
+    -o bin/solskogen-release \
+    /usr/lib/x86_64-linux-gnu/crt1.o \
+    obj/solskogen-release.o \
+    -lGL \
+    -lgtk-3 \
+    -lgobject-2.0 \
+    -lc \
+    /usr/lib/x86_64-linux-gnu/crtn.o
+```
+
+Uncompressed: 9016 bytes.
+Final: 3311 bytes.
