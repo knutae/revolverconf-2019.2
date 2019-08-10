@@ -83,3 +83,30 @@ mono $SHADER_MINIFIER --preserve-externals fshader.glsl -o gen/shaders.h
 
 Uncompressed: 21992 bytes.
 Final: 4982 bytes.
+
+## ELFkickers sstrip tool
+
+```bash
+readelf -a bin/solskogen-release | less
+```
+
+Use the `sstrip` tool from [ELFkickers](https://github.com/BR903/ELFkickers) to remove the section header table from the executable. They are not needed for running the program.
+
+```
+SSTRIP=ELFkickers/bin/sstrip
+if [ ! -e $SSTRIP ]; then
+    pushd ELFkickers
+    make
+    popd
+fi
+
+...
+
+gcc obj/solskogen-release.o $LIBS -o bin/solskogen-release
+$SSTRIP bin/solskogen-release
+```
+
+Uncompressed: 16408 bytes.
+Final: 3779 bytes.
+
+Hey, we're under 4k already!
