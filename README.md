@@ -91,7 +91,7 @@ Final: 4961 bytes.
 readelf -a bin/solskogen-release | less
 ```
 
-Use the `sstrip` tool from [ELFkickers](https://github.com/BR903/ELFkickers) to remove the section header table from the executable. They are not needed for running the program.
+Use the `sstrip` tool from [ELFkickers](https://github.com/BR903/ELFkickers) to remove the section header table from the executable. It is not needed for running the program.
 
 ```
 SSTRIP=ELFkickers/bin/sstrip
