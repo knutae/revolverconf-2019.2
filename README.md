@@ -17,15 +17,16 @@ CFLAGS="$CFLAGS $(pkg-config --cflags gtk+-3.0)"
 LIBS="-lGL $(pkg-config --libs gtk+-3.0)"
 
 # debug version
-gcc $CFLAGS -DDEBUG -c solskogen.c -o obj/solskogen-debug.o
-gcc obj/solskogen-debug.o $LIBS -o bin/solskogen-debug
+cc $CFLAGS -DDEBUG -c solskogen.c -o obj/solskogen-debug.o
+cc obj/solskogen-debug.o $LIBS -o bin/solskogen-debug
 
 # release version
-gcc $CFLAGS -DNDEBUG -c solskogen.c -o obj/solskogen-release.o
-gcc obj/solskogen-release.o $LIBS -o bin/solskogen-release
+cc $CFLAGS -DNDEBUG -c solskogen.c -o obj/solskogen-release.o
+cc obj/solskogen-release.o $LIBS -o bin/solskogen-release
 ```
 
-26088 bytes.
+Debug: 26560 bytes.
+Release: 26176 bytes.
 
 ## Executable compression
 
@@ -33,7 +34,7 @@ gcc obj/solskogen-release.o $LIBS -o bin/solskogen-release
 gzexe bin/solskogen-release
 ```
 
-7903 bytes.
+7880 bytes.
 
 We can do better with a custom uncompress header:
 
@@ -51,7 +52,7 @@ cat uncompress-header bin/solskogen-release.xz > bin/solskogen
 chmod a+x bin/solskogen
 ```
 
-6223 bytes
+6183 bytes.
 
 And tweak the `xz` command to achieve better compression.
 
@@ -62,7 +63,7 @@ cat uncompress-header bin/solskogen-release.xz > bin/solskogen
 chmod a+x bin/solskogen
 ```
 
-6172 bytes
+6143 bytes.
 
 ## Shader minifier tool
 
@@ -81,8 +82,8 @@ set -x
 mono $SHADER_MINIFIER --preserve-externals fshader.glsl -o gen/shaders.h
 ```
 
-Uncompressed: 21992 bytes.
-Final: 4982 bytes.
+Uncompressed: 22080 bytes.
+Final: 4961 bytes.
 
 ## ELFkickers sstrip tool
 
@@ -102,11 +103,11 @@ fi
 
 ...
 
-gcc obj/solskogen-release.o $LIBS -o bin/solskogen-release
+cc obj/solskogen-release.o $LIBS -o bin/solskogen-release
 $SSTRIP bin/solskogen-release
 ```
 
-Uncompressed: 16408 bytes.
-Final: 3779 bytes.
+Uncompressed: 16656 bytes.
+Final: 3741 bytes.
 
 Hey, we're under 4k already!
