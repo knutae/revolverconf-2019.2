@@ -307,3 +307,39 @@ Uncompressed: 8752 bytes.
 Final: 3099 bytes.
 
 We saved a whooping 11 bytes in the compressed binary. (Perhaps there are more bytes to save by implemeting our own minimal version of `crt1.o`?)
+
+## Optimizing C code
+
+The GTK casting macros do some extra checks that can be skipped. We can replace it with direct casts to save some bytes.
+
+```c
+#ifndef DEBUG
+// Redefine GTK casting macros as direct casts
+#undef GTK_GL_AREA
+#undef GTK_CONTAINER
+#undef GTK_WINDOW
+#undef GTK_WIDGET
+#define GTK_GL_AREA (GtkGLArea*)
+#define GTK_CONTAINER (GtkContainer*)
+#define GTK_WINDOW (GtkWindow*)
+#define GTK_WIDGET (GtkWidget*)
+#endif
+```
+
+It's nice to be able to quit via pressing escape, but we can use a Linux system call via inline assembler instead of calling `gtk_main_quit()`.
+
+```c
+void key_press(GtkWidget * widget, GdkEventKey * event, GtkGLArea * area) {
+  if (event->keyval == GDK_KEY_Escape) {
+#ifdef DEBUG
+    gtk_main_quit();
+#else
+    // sys_exit_group (exit all threads) x86_64 syscall
+    asm("mov $231,%rax; mov $0,%rdi; syscall");
+#endif
+  }
+}
+```
+
+Uncompressed: 7840 bytes.
+Final: 2990 bytes.
