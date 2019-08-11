@@ -293,3 +293,16 @@ cc $CFLAGS -c minlibc.c -o obj/minlibc.o
 
 Uncompressed: 8752 bytes.
 Final: 3110 bytes.
+
+## Customizing the C runtime (crt1.o)
+
+Inspecting the C runtime object with `objdump -D /usr/lib/x86_64-linux-gnu/crt1.o` shows a `.eh_frame` which is used for exception handling. This is not needed for our C program. Let's try to get rid of it.
+
+```bash
+objcopy --remove-section .eh_frame /usr/lib/x86_64-linux-gnu/crt1.o obj/crt1.o
+```
+
+Uncompressed: 8752 bytes.
+Final: 3099 bytes.
+
+We saved a whooping 11 bytes in the compressed binary. (Perhaps there are more bytes to save by implemeting our own minimal version of `crt1.o`?)
