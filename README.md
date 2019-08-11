@@ -112,7 +112,7 @@ Final: 3741 bytes.
 
 Hey, we're under 4k already!
 
-## Linking tuning
+## Linker tuning
 
 Add `-v` to link command to see the underlying `ld` command. Tune this to reduce the size futher.
 
@@ -138,7 +138,8 @@ Add `-v` to link command to see the underlying `ld` command. Tune this to reduce
     -L/usr/lib \
     -L/usr/lib/llvm-7/lib \
     -L/lib \
-    -L/usr/lib obj/solskogen-release.o \
+    -L/usr/lib \
+    obj/solskogen-release.o \
     -lGL \
     -lgtk-3 \
     -lgdk-3 \
@@ -193,8 +194,8 @@ Add `-v` to link command to see the underlying `ld` command. Tune this to reduce
 -    -L/usr/lib \
 -    -L/usr/lib/llvm-7/lib \
 -    -L/lib \
--    -L/usr/lib obj/solskogen-release.o \
-+    obj/solskogen-release.o \
+-    -L/usr/lib \
+     obj/solskogen-release.o \
      -lGL \
      -lgtk-3 \
 -    -lgdk-3 \
