@@ -27,7 +27,6 @@ objcopy --remove-section .eh_frame /usr/lib/x86_64-linux-gnu/crt1.o obj/crt1.o
 
 # release version
 cc $CFLAGS -DNDEBUG -c 08-solskogen.c -o obj/solskogen-release.o
-cc $CFLAGS -c minlibc.c -o obj/minlibc.o
 /usr/bin/ld \
     -z norelro \
     -z noseparate-code \
@@ -41,9 +40,7 @@ cc $CFLAGS -c minlibc.c -o obj/minlibc.o
     -dynamic-linker \
     /lib64/ld-linux-x86-64.so.2 \
     -o bin/solskogen-release \
-    obj/crt1.o \
     obj/solskogen-release.o \
-    obj/minlibc.o \
     -lGL \
     -lgtk-3 \
     -lgobject-2.0

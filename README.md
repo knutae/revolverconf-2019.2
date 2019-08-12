@@ -321,5 +321,5 @@ void key_press(GtkWidget * widget, GdkEventKey * event, GtkGLArea * area) {
 }
 ```
 
-Uncompressed: 7840 bytes.
-Final: 2990 bytes.
+Uncompressed: 7688 bytes.
+Final: 2909 bytes.

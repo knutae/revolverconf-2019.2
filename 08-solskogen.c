@@ -130,3 +130,9 @@ int main() {
   gtk_main();
   return 0;
 }
+
+#ifndef DEBUG
+void _start() {
+    asm("call main");
+}
+#endif
