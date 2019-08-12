@@ -251,26 +251,21 @@ Final: 3311 bytes.
 
 ## Linking without libc
 
-If we try to link without `-lc`, we get an unresolved `__libc_start_main` from `crt1.o`. Some tutorials suggest using a `_start` function at the entry point instead of `main`, and not linking `crt1.o` at all, but that doesn't seem to work when loading shared libraries (it segfaults).
+If we try to link without `-lc`, we get an unresolved `__libc_start_main` from `crt1.o` (C runtime object). The actual entry point in Linux executables is not `main`, but a a function called `_start`, implemented in `crt1.o`, and this depends on libc being available.
 
-As a simpler solution, let's try implementing our own minimal versions `__libc_start_main` and other functions referenced by `crt1.o`.
+If we try to implement our own `_start` function and just call `main()` from it, we get a segmentation fault. However, using inline assembler code to do the same works. (If anyone knows why, let me know.)
 
 ```c
-// minlibc.c
-extern int main();
-
-// Minimal implementations of crt1.o libc functions.
-// With these defined, we don't need to link libc. Probably.
-void __libc_csu_init() {}
-void __libc_csu_fini() {}
-void __libc_start_main() { main(); }
+#ifndef DEBUG
+void _start() {
+    asm("call main");
+}
+#endif
 ```
 
-Compile and link this instead of `-lc` and `ctrn.o`.
+After adding this, we can remove `-lc`, `crt1.o` and `ctrn.o`.
 
 ```bash
-cc $CFLAGS -DNDEBUG -c solskogen.c -o obj/solskogen-release.o
-cc $CFLAGS -c minlibc.c -o obj/minlibc.o
 /usr/bin/ld \
     -z norelro \
     -z noseparate-code \
@@ -284,29 +279,14 @@ cc $CFLAGS -c minlibc.c -o obj/minlibc.o
     -dynamic-linker \
     /lib64/ld-linux-x86-64.so.2 \
     -o bin/solskogen-release \
-    /usr/lib/x86_64-linux-gnu/crt1.o \
     obj/solskogen-release.o \
-    obj/minlibc.o \
     -lGL \
     -lgtk-3 \
     -lgobject-2.0
 ```
 
 Uncompressed: 8752 bytes.
-Final: 3110 bytes.
-
-## Customizing the C runtime (crt1.o)
-
-Inspecting the C runtime object with `objdump -D /usr/lib/x86_64-linux-gnu/crt1.o` shows a `.eh_frame` which is used for exception handling. This is not needed for our C program. Let's try to get rid of it.
-
-```bash
-objcopy --remove-section .eh_frame /usr/lib/x86_64-linux-gnu/crt1.o obj/crt1.o
-```
-
-Uncompressed: 8752 bytes.
-Final: 3099 bytes.
-
-We saved a whooping 11 bytes in the compressed binary. (Perhaps there are more bytes to save by implemeting our own minimal version of `crt1.o`?)
+Final: 3064 bytes.
 
 ## Optimizing C code
 

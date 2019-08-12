@@ -23,8 +23,7 @@ CFLAGS="$CFLAGS $(pkg-config --cflags gtk+-3.0)"
 LIBS="-lGL $(pkg-config --libs gtk+-3.0)"
 
 # release version
-cc $CFLAGS -DNDEBUG -c solskogen.c -o obj/solskogen-release.o
-cc $CFLAGS -c minlibc.c -o obj/minlibc.o
+cc $CFLAGS -DNDEBUG -c 06-solskogen.c -o obj/solskogen-release.o
 /usr/bin/ld \
     -z norelro \
     -z noseparate-code \
@@ -38,7 +37,6 @@ cc $CFLAGS -c minlibc.c -o obj/minlibc.o
     -dynamic-linker \
     /lib64/ld-linux-x86-64.so.2 \
     -o bin/solskogen-release \
-    /usr/lib/x86_64-linux-gnu/crt1.o \
     obj/solskogen-release.o \
     obj/minlibc.o \
     -lGL \
