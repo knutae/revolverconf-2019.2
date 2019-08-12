@@ -26,7 +26,7 @@ LIBS="-lGL $(pkg-config --libs gtk+-3.0)"
 objcopy --remove-section .eh_frame /usr/lib/x86_64-linux-gnu/crt1.o obj/crt1.o
 
 # release version
-cc $CFLAGS -DNDEBUG -c solskogen-optimized.c -o obj/solskogen-release.o
+cc $CFLAGS -DNDEBUG -c 08-solskogen.c -o obj/solskogen-release.o
 cc $CFLAGS -c minlibc.c -o obj/minlibc.o
 /usr/bin/ld \
     -z norelro \
