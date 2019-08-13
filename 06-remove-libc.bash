@@ -38,7 +38,6 @@ cc $CFLAGS -DNDEBUG -c 06-solskogen.c -o obj/solskogen-release.o
     /lib64/ld-linux-x86-64.so.2 \
     -o bin/solskogen-release \
     obj/solskogen-release.o \
-    obj/minlibc.o \
     -lGL \
     -lgtk-3 \
     -lgobject-2.0
