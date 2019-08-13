@@ -18,7 +18,7 @@ fi
 
 mono $SHADER_MINIFIER --preserve-externals fshader.glsl -o gen/shaders.h
 
-CFLAGS="-fomit-frame-pointer -fno-stack-protector -Wall -Werror -Oz"
+CFLAGS="-Wall -Werror -Oz"
 CFLAGS="$CFLAGS -fno-plt -fno-unwind-tables"
 CFLAGS="$CFLAGS $(pkg-config --cflags gtk+-3.0)"
 
