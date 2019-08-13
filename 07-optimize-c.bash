@@ -22,9 +22,6 @@ CFLAGS="-fomit-frame-pointer -fno-stack-protector -Wall -Werror -Os"
 CFLAGS="$CFLAGS $(pkg-config --cflags gtk+-3.0)"
 LIBS="-lGL $(pkg-config --libs gtk+-3.0)"
 
-# custom crt1.o (remove .eh_frame section)
-objcopy --remove-section .eh_frame /usr/lib/x86_64-linux-gnu/crt1.o obj/crt1.o
-
 # release version
 cc $CFLAGS -DNDEBUG -c 07-solskogen.c -o obj/solskogen-release.o
 /usr/bin/ld \
