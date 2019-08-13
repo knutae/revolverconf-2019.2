@@ -323,3 +323,14 @@ void key_press(GtkWidget * widget, GdkEventKey * event, GtkGLArea * area) {
 
 Uncompressed: 7688 bytes.
 Final: 2909 bytes.
+
+## Tuning code generation options
+
+We should probably have looked at the code generation options earlier, but better late than never. The following changes save some more bytes:
+
+ * `-fno-plt` disables lazy loading of procedures in shared libraries (if I understood the documentation correctly). This removes a code stub for each shared library symbol and thus reduces the code size.
+ * `-fno-unwind-tables` removes an unused `.eh_frame` (exception handling) section.
+ * Replacing `-Os` with `-Oz` makes the compiler try harder to reduce the code size.
+
+Uncompressed: 7104 bytes.
+Final: 2688 bytes.
